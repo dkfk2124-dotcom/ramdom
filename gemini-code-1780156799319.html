@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>⚡ 실시간 즉석 뽑기 ⚡</title>
+    <style>
+        body { font-family: 'Apple SD Gothic Neo', sans-serif; text-align: center; background-color: #f7f9fc; margin: 0; padding: 0; display: flex; justify-content: center; align-items: center; height: 100vh; }
+        .card { background: white; padding: 40px 30px; border-radius: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.08); max-width: 350px; width: 90%; }
+        h1 { font-size: 24px; color: #333; margin-bottom: 10px; }
+        .desc { color: #666; font-size: 14px; margin-bottom: 30px; }
+        .result-box { font-size: 28px; font-weight: bold; margin: 20px 0; min-height: 40px; }
+        .loading { color: #007bff; }
+        .win { color: #e74c3c; animation: bounce 0.5s infinite alternate; }
+        .lose { color: #7f8c8d; }
+        @keyframes bounce { from { transform: translateY(0); } to { transform: translateY(-10px); } }
+    </style>
+</head>
+<body>
+
+<div class="card">
+    <h1>행운의 즉석 추첨</h1>
+    <p class="desc">화면이 열리면 결과가 즉시 공개됩니다!</p>
+    <div id="result" class="result-box loading">결과 분석 중...</div>
+</div>
+
+<script>
+    // 구글 Apps Script 웹 앱 URL을 여기에 붙여넣으세요
+    const WEB_APP_URL = 'YOUR_WEB_APP_URL_HERE'; 
+
+    window.onload = function() {
+        fetch(WEB_APP_URL)
+            .then(response => response.json())
+            .then(data => {
+                const resultDiv = document.getElementById('result');
+                if (data.result === '당첨') {
+                    resultDiv.className = 'result-box win';
+                    resultDiv.innerHTML = '🎉 당첨입니다! 🎉<br><span style="font-size:16px; font-weight:normal; color:#555; display:block; margin-top:10px;">스태프에게 이 화면을 보여주세요!</span>';
+                } else {
+                    resultDiv.className = 'result-box lose';
+                    resultDiv.innerHTML = '아쉽지만 꽝... 😢<br><span style="font-size:16px; font-weight:normal; color:#888; display:block; margin-top:10px;">다음 기회에 도전해 주세요!</span>';
+                }
+            })
+            .catch(error => {
+                document.getElementById('result').innerText = '오류가 발생했습니다. 다시 시도해 주세요.';
+                console.error(error);
+            });
+    };
+</script>
+</body>
+</html>
