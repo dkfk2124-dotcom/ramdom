@@ -9,10 +9,11 @@
         .card { background: white; padding: 40px 30px; border-radius: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.08); max-width: 350px; width: 90%; }
         h1 { font-size: 24px; color: #333; margin-bottom: 10px; }
         .desc { color: #666; font-size: 14px; margin-bottom: 30px; }
-        .result-box { font-size: 28px; font-weight: bold; margin: 20px 0; min-height: 40px; }
+        .result-box { font-size: 24px; font-weight: bold; margin: 20px 0; min-height: 40px; line-height: 1.5; }
         .loading { color: #007bff; }
         .win { color: #e74c3c; animation: bounce 0.5s infinite alternate; }
         .lose { color: #7f8c8d; }
+        .end { color: #e67e22; }
         @keyframes bounce { from { transform: translateY(0); } to { transform: translateY(-10px); } }
     </style>
 </head>
@@ -25,17 +26,21 @@
 </div>
 
 <script>
-    // 구글 Apps Script 웹 앱 URL을 여기에 붙여넣으세요
-    const WEB_APP_URL = 'https://script.google.com/macros/s/AKfycbw7kcWxu0E0-68UtafKCgvjUs8v_Rn0vqUGR_lt57AbIeaTF_P8yRCUtAMtHSxfSE7Q/exec'; 
+    // 본인의 구글 웹 앱 URL 주소를 입력하세요
+    const WEB_APP_URL = 'https://script.google.com/macros/s/AKfycbyR0vfh_VXx7p7_fZRAUCqQObsbparn75ybnT3pLr5YX0lO3-FjoxtJvUWMtvfpFUwDGQ/exec'; 
 
     window.onload = function() {
         fetch(WEB_APP_URL)
             .then(response => response.json())
             .then(data => {
                 const resultDiv = document.getElementById('result');
+                
                 if (data.result === '당첨') {
                     resultDiv.className = 'result-box win';
                     resultDiv.innerHTML = '🎉 당첨입니다! 🎉<br><span style="font-size:16px; font-weight:normal; color:#555; display:block; margin-top:10px;">스태프에게 이 화면을 보여주세요!</span>';
+                } else if (data.result === '종료') {
+                    resultDiv.className = 'result-box end';
+                    resultDiv.innerHTML = '📢 안내<br><span style="font-size:18px; color:#e67e22;">이미 당첨자가 나왔습니다.</span><br><span style="font-size:14px; font-weight:normal; color:#888; display:block; margin-top:10px;">이벤트가 종료되었습니다. 감사합니다!</span>';
                 } else {
                     resultDiv.className = 'result-box lose';
                     resultDiv.innerHTML = '아쉽지만 꽝... 😢<br><span style="font-size:16px; font-weight:normal; color:#888; display:block; margin-top:10px;">다음 기회에 도전해 주세요!</span>';
