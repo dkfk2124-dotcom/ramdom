@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <title>⚡ 실시간 즉석 뽑기 ⚡</title>
+    <style>
+        @page {
+            size: A4;
+            margin: 0;
+            background-color: #f7f9fc;
+        }
+        * {
+            box-sizing: border-box;
+        }
+        body {
+            font-family: 'Apple SD Gothic Neo', 'Malgun Gothic', sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f7f9fc;
+            display: block;
+        }
+        .container {
+            width: 100%;
+            height: 297mm; /* Full A4 height to center precisely */
+            position: relative;
+        }
+        .card {
+            background: white;
+            padding: 50px 40px;
+            border-radius: 24px;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.06);
+            width: 400px;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            text-align: center;
+        }
+        h1 {
+            font-size: 26px;
+            color: #2c3e50;
+            margin: 0 0 12px 0;
+            font-weight: 700;
+        }
+        .desc {
+            color: #7f8c8d;
+            font-size: 14px;
+            margin: 0 0 35px 0;
+            line-height: 1.5;
+        }
+        .result-box {
+            font-size: 28px;
+            font-weight: bold;
+            margin: 25px 0;
+            min-height: 90px;
+        }
+        .loading {
+            color: #3498db;
+        }
+        .win {
+            color: #e74c3c;
+        }
+        .lose {
+            color: #7f8c8d;
+        }
+        .sub-text {
+            font-size: 15px;
+            font-weight: normal;
+            color: #555;
+            display: block;
+            margin-top: 15px;
+            line-height: 1.4;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <div class="card">
+        <h1>행운의 즉석 추첨</h1>
+        <p class="desc">화면이 열리면 결과가 즉시 공개됩니다!</p>
+        <div id="result" class="result-box loading">결과 분석 중...</div>
+    </div>
+</div>
+
+<script>
+    // 구글 Apps Script 웹 앱 URL을 여기에 붙여넣으세요
+    const WEB_APP_URL = 'https://script.google.com/macros/s/AKfycbyNP7C4hC7uGln493qtpZNh-9NAHHIab3OGlgiESguuE_juK_NcNm9wCgG_BkDHQBOukA/exec'; 
+
+    window.onload = function() {
+        fetch(WEB_APP_URL)
+            .then(response => response.json())
+            .then(data => {
+                const resultDiv = document.getElementById('result');
+                if (data.result === '당첨') {
+                    resultDiv.className = 'result-box win';
+                    resultDiv.innerHTML = '🎉 당첨입니다! 🎉<br><span class="sub-text">스태프에게 이 화면을 보여주세요!</span>';
+                } else {
+                    resultDiv.className = 'result-box lose';
+                    resultDiv.innerHTML = '아쉽지만 꽝... 😢<br><span class="sub-text" style="color:#888;">다음 기회에 도전해 주세요!</span>';
+                }
+            })
+            .catch(error => {
+                document.getElementById('result').innerText = '오류가 발생했습니다. 다시 시도해 주세요.';
+                document.getElementById('result').style.fontSize = '16px';
+                console.error(error);
+            });
+    };
+</script>
+</body>
+</html>
