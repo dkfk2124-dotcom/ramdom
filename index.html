@@ -34,7 +34,7 @@
                 
                 if (data.result === '성공') {
                     resultDiv.className = 'number-box';
-                    resultDiv.innerHTML = `🎉 ${data.number}번 🎉<br><span style="font-size:14px; font-weight:normal; color:#555; display:block; margin-top:15px;">이 화면을 스태프에게 보여주세요!</span>`;
+                    resultDiv.innerHTML = `🎉 ${data.number}번 🎉<br><span style="font-size:14px; font-weight:normal; color:#555; display:block; margin-top:15px;">이 화면을 캡쳐해주세요!</span>`;
                 } else if (data.result === '마감') {
                     resultDiv.className = 'number-box soldout';
                     resultDiv.innerHTML = `모든 번호가<br>마감되었습니다! 😢`;
