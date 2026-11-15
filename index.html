@@ -3,51 +3,85 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>🎯 나의 번호뽑기 🎯</title>
+    <title>🎯 나의 번호 뽑기 🎯</title>
     <style>
         body { font-family: 'Apple SD Gothic Neo', sans-serif; text-align: center; background-color: #f7f9fc; margin: 0; padding: 0; display: flex; justify-content: center; align-items: center; height: 100vh; }
         .card { background: white; padding: 40px 30px; border-radius: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.08); max-width: 350px; width: 90%; }
         h1 { font-size: 24px; color: #333; margin-bottom: 10px; }
         .desc { color: #666; font-size: 14px; margin-bottom: 20px; }
-        .number-box { font-size: 55px; font-weight: bold; color: #2980b9; margin: 20px 0; }
-        .loading { color: #007bff; font-size: 20px; }
-        .soldout { color: #e74c3c; font-size: 20px; }
+        input { width: 80%; padding: 12px; font-size: 16px; border: 1px solid #ddd; border-radius: 8px; margin-bottom: 15px; text-align: center; }
+        button { background-color: #007bff; color: white; border: none; padding: 12px 20px; font-size: 16px; border-radius: 8px; cursor: pointer; width: 100%; font-weight: bold; }
+        button:hover { background-color: #0056b3; }
+        .number-box { font-size: 45px; font-weight: bold; color: #2980b9; margin: 20px 0; }
+        .msg { font-size: 15px; color: #e67e22; margin-bottom: 15px; font-weight: bold; }
+        .hidden { display: none; }
     </style>
 </head>
 <body>
 
 <div class="card">
-    <h1>행운의 번호 추첨</h1>
-    <p class="desc">QR을 통해 부여받은 나의 번호는?</p>
-    <div id="result" class="number-box loading">추첨 중...</div>
+    <h1> 번호 추첨</h1>
+    
+    <!-- 입력 화면 -->
+    <div id="input-section">
+        <p class="desc">본인의 <strong>이름</strong>을 입력해주세요.</p>
+        <input type="text" id="userKey" placeholder="예: 홍길동" maxlength="10">
+        <button onclick="getLuckyNumber()">번호 뽑기 / 확인하기</button>
+    </div>
+
+    <!-- 결과 화면 (초기엔 숨김) -->
+    <div id="result-section" class="hidden">
+        <div id="status-msg" class="msg"></div>
+        <div id="number-display" class="number-box">--번</div>
+        <p style="font-size:14px; color:#555;">이 화면을 스태프에게 보여주세요!</p>
+    </div>
 </div>
 
 <script>
-    //
+    // 본인의 구글 웹 앱 URL 주소를 입력하세요
     const WEB_APP_URL = 'https://script.google.com/macros/s/AKfycbyR0vfh_VXx7p7_fZRAUCqQObsbparn75ybnT3pLr5YX0lO3-FjoxtJvUWMtvfpFUwDGQ/exec'; 
 
-    window.onload = function() {
-        fetch(WEB_APP_URL)
+    function getLuckyNumber() {
+        const userKey = document.getElementById('userKey').value.trim();
+        if (!userKey) {
+            alert('이름을 입력해주세요!');
+            return;
+        }
+
+        const btn = document.querySelector('button');
+        btn.innerText = '확인 중...';
+        btn.disabled = true;
+
+        fetch(`${WEB_APP_URL}?userKey=${encodeURIComponent(userKey)}`)
             .then(response => response.json())
             .then(data => {
-                const resultDiv = document.getElementById('result');
+                document.getElementById('input-section').classList.add('hidden');
+                document.getElementById('result-section').classList.remove('hidden');
                 
-                if (data.result === '성공') {
-                    resultDiv.className = 'number-box';
-                    resultDiv.innerHTML = `🎉 ${data.number}번 🎉<br><span style="font-size:14px; font-weight:normal; color:#555; display:block; margin-top:15px;">이 화면을 캡쳐해주세요!</span>`;
-                } else if (data.result === '마감') {
-                    resultDiv.className = 'number-box soldout';
-                    resultDiv.innerHTML = `모든 번호가<br>마감되었습니다! 😢`;
+                const statusMsg = document.getElementById('status-msg');
+                const numberDisplay = document.getElementById('number-display');
+
+                if (data.result === 'success') {
+                    statusMsg.innerText = `🎉 ${userKey}님의 번호 발급 완료! 🎉`;
+                    numberDisplay.innerText = `${data.number}번`;
+                } else if (data.result === 'exists') {
+                    statusMsg.innerText = `⚠️ ${userKey}님은 이미 발급받은 번호가 있습니다!`;
+                    numberDisplay.innerText = `${data.number}번`;
+                } else if (data.result === 'soldout') {
+                    statusMsg.innerText = '모든 번호가 마감되었습니다.';
+                    numberDisplay.innerText = '종료';
                 } else {
-                    resultDiv.className = 'number-box soldout';
-                    resultDiv.innerText = '오류 발생';
+                    statusMsg.innerText = '오류가 발생했습니다.';
+                    numberDisplay.innerText = '-';
                 }
             })
             .catch(error => {
-                document.getElementById('result').innerText = '오류가 발생했습니다.';
+                alert('통신 오류가 발생했습니다. 다시 시도해주세요.');
+                btn.innerText = '번호 뽑기 / 확인하기';
+                btn.disabled = false;
                 console.error(error);
             });
-    };
+    }
 </script>
 </body>
 </html>
